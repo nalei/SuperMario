@@ -38,7 +38,7 @@ function play(name_raw, override) {
     sound.currentTime = 0;
   }
   sound.volume = !muted;
-  // sound.play();
+  sound.play();
 
   // If this is the first time the sound was added, let it know how to stop
   if(!(sound.used++)) sound.addEventListener("ended", function() { mlog("Sounds", sound); soundFinish(sound, name_raw); });

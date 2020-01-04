@@ -86,6 +86,6 @@ function loadSounds(container, reference, prefix) {
 
     // This preloads the sound.
     sound.volume = 0;
-    // sound.play();
+    sound.play();
   }
 }

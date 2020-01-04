@@ -67,7 +67,7 @@ function startDataTime() {
 function updateDataTime(me) {
   // If the time direction isn't up (random map), check for timing
   if(me.dir != 1) {
-    if(me.amount == 100) playCurrentThemeHurry(); 
+    if(me.amount == 100) playCurrentThemeHurry();
     else if(me.amount <= 0) killMario(mario, true);
   }
   // If time is still enabled, change it by 1
