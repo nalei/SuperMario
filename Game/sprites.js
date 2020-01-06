@@ -48,7 +48,7 @@ function spriteUnravel(colors) {
         while(rep--) output += current;
         loc = nixloc + 1;
       break;
-      
+
       // A palette changer, in the form 'p[X,Y,Z...]' (or 'p' for default)
       case 'p':
         // If the next character is a '[', customize.
@@ -65,14 +65,14 @@ function spriteUnravel(colors) {
           digitsize = window.digitsize;
         }
       break;
-      
+
       // A typical number
-      default: 
+      default:
         output += makeDigit(paletteref[colors.slice(loc, loc += digitsize)], window.digitsize);
       break;
     }
   }
-  
+
   return output;
 }
 
@@ -82,7 +82,7 @@ function spriteExpand(colors) {
   var output = "",
       clength = colors.length,
       current, i = 0, j;
-  
+
   // For each number,
   while(i < clength) {
     current = colors.slice(i, i += digitsize);
@@ -112,7 +112,7 @@ function spriteGetArray(colors) {
       output[j + k] = reference[k];
     j += 4;
   }
-  
+
   return output;
 }
 
@@ -134,7 +134,7 @@ function setThingSprite(thing) {
       key = title + " " + classes, // ex: "Mario mario,running,small,two"
       cached = cache[key],
       sprite;
-      
+
   // If one isn't found, search for it manually
   sprite = getSpriteFromLibrary(thing);
   if(!sprite) {
@@ -162,14 +162,14 @@ function getSpriteFromLibrary(thing) {
       setting = (map.area || window.defaultsetting).setting.split(" "),
       key, cached, sprite,
       i;
-  
+
   // So it knows to do these conditionally, add them to the front
   for(i in setting) classes.unshift(setting[i]);
-  
+
   key = title + " " + classes; // ex: "Mario mario,running,small,two"
   cached = cache[key],
   sprite;
-  
+
   // Since one isn't found, search for it manually
   if(!cached) {
     sprite = library.sprites[libtype][title];
@@ -182,12 +182,12 @@ function getSpriteFromLibrary(thing) {
     if(sprite.constructor != Uint8ClampedArray) {
       sprite = findSpriteInLibrary(thing, sprite, classes);
     }
-      
+
     // The plain data has been found, so that shall be saved
     cached = cache[key] = { raw: sprite };
   }
   else sprite = cached.raw;
-  
+
   // The raw cache has been found or set: now to adjust for flipping
   // To do: use .flip-horiz, .flip-vert
   switch(String(Number(classes.indexOf("flipped") >= 0)) + String(Number(classes.indexOf("flip-vert") >= 0))) {
@@ -205,7 +205,7 @@ function getSpriteFromLibrary(thing) {
     break;
     default: sprite = cached.raw;
   }
-  
+
   return sprite;
 }
 
@@ -218,7 +218,7 @@ function expandObtainedSprite(sprite, thing, width, height, norefill) {
       readloc = 0,
       writeloc = 0,
       si, sj;
-  
+
   // For each row:
   for(si = 0; si < heightscale; ++si) {
     // Add it to parsed x scale
@@ -228,7 +228,7 @@ function expandObtainedSprite(sprite, thing, width, height, norefill) {
     }
     readloc += rowsize;
   }
-  
+
   // If this isn't part of a multiple sprite, record the sprite into the thing's canvas
   if(!norefill) {
     thing.num_sprites = 1;
@@ -242,7 +242,7 @@ function expandObtainedSpriteMultiple(sprites, thing, width, height) {
   // The middle (repeated) sprite is used as normal
   var parsed = {}, sprite, part;
   thing.num_sprites = 0;
-  
+
   // Expand each array from the multiple sprites to parsed
   for(part in sprites) {
     // If it's an actual sprite array, parse it
@@ -255,8 +255,8 @@ function expandObtainedSpriteMultiple(sprites, thing, width, height) {
     // Otherwise just add it
     else parsed[part] = sprite;
   }
-  
-  // Set the thing canvas (parsed.middle) 
+
+  // Set the thing canvas (parsed.middle)
   thing.sprite = parsed.middle;
   thing.sprites = parsed;
   refillThingCanvases(thing, parsed);
@@ -265,13 +265,13 @@ function expandObtainedSpriteMultiple(sprites, thing, width, height) {
 // Called when getSpriteFromLibrary has determined the cache doesn't contain the thing
 function findSpriteInLibrary(thing, current, classes) {
   var nogood, check, i, prev = current;
-  
+
   // If it's a sprite multiple, return that
   if(current.multiple) return current;
-  
+
   // TO DO: GET RID OF THIS IN RELEASE
   var loop_num = 0;
-  
+
   // Otherwise, keep searching deeper until a string or SpriteMultiple is found
   while(nogood = true) {
     // TO DO: GET RID OF THIS IN RELEASE
@@ -288,7 +288,7 @@ function findSpriteInLibrary(thing, current, classes) {
         break;
       }
     }
-    
+
     // If none match, try the default ('normal')
     if(nogood) {
       if(check = current.normal) {
@@ -298,7 +298,7 @@ function findSpriteInLibrary(thing, current, classes) {
           case "Uint8ClampedArray":  case "SpriteMultiple":
             return check;
           // If it's an object, recurse normally
-          case "Object": 
+          case "Object":
             current = check;
           break;
           default:
@@ -307,14 +307,14 @@ function findSpriteInLibrary(thing, current, classes) {
         }
       } else nogood = true;
     }
-    
+
     // Check the type to see what to do next
     if(!nogood && current) {
       switch(current.constructor.name) {
         // You did it!
         case "Uint8ClampedArray": case "SpriteMultiple": return current;
         // Keep going
-        case "Object": 
+        case "Object":
           continue;
       }
     } else {
@@ -348,7 +348,7 @@ function refillThingCanvases(thing, parsed) {
       height = thing.spriteheightpixels,
       part, imageData, canvas, context, i;
   thing.num_sprites = 1;
-  
+
   for(i in parsed) {
     // If it's a Uint8ClampedArray, parse it into a canvas and add it
     if((part = parsed[i]) instanceof Uint8ClampedArray) {
@@ -376,7 +376,7 @@ function refillCanvas() {
   var canvas = window.canvas,
       context = window.context,
       things, thing, left, top, i;
-  
+
   // I could implement dirty rectangles, but why? Worst case == average case...
   // context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = area.fillStyle;
@@ -393,7 +393,7 @@ function drawThingOnCanvas(context, me) {
   var leftc = me.left,
       topc = me.top;
   if(leftc > innerWidth) return;
-  
+
   // If there's just one sprite, it's pretty simple
   // drawThingOnCanvasSingle(context, me.canvas, me, leftc, topc);
   if(me.num_sprites == 1) drawThingOnCanvasSingle(context, me.canvas, me, leftc, topc);
@@ -417,7 +417,7 @@ function drawThingOnCanvasMultiple(context, canvases, canvas, me, leftc, topc) {
       spritewidthpixels = me.spritewidthpixels,
       spriteheightpixels = me.spriteheightpixels,
       sdiff, canvasref;
-  
+
   // Vertical sprites may have 'top', 'bottom', 'middle'
   if(me.sprite_type[0] == 'v') {
     // If there's a bottom, draw that and push up bottomreal
@@ -435,7 +435,7 @@ function drawThingOnCanvasMultiple(context, canvases, canvas, me, leftc, topc) {
       heightreal -= sdiff;
     }
   }
-  
+
   // Horizontal sprites may have 'left', 'right', 'middle'
   else if(me.sprite_type[0] == 'h'){
     // If there's a left, draw that and push up leftreal
@@ -453,7 +453,7 @@ function drawThingOnCanvasMultiple(context, canvases, canvas, me, leftc, topc) {
       widthreal -= sdiff;
     }
   }
-  
+
   // If there's still room, draw the actual canvas
   if(topreal < bottomreal && leftreal < rightreal) {
     drawPatternOnCanvas(context, canvas, leftreal, topreal, widthreal, heightreal);
@@ -513,7 +513,7 @@ function flipSpriteArrayVert(sprite, thing) {
       newloc = 0,
       oldloc = length - rowsize,
       i, j, k;
-  
+
   // For each row
   while(newloc < length) {
     // For each pixel in the rows
@@ -526,7 +526,7 @@ function flipSpriteArrayVert(sprite, thing) {
     newloc += rowsize;
     oldloc -= rowsize;
   }
-  
+
   return newsprite;
 }
 // Flipping both horizontally and vertically is actually just reversing the order of pixels
@@ -594,7 +594,7 @@ function memcpyU8(source, destination, readloc, writeloc, writelength/*, thing*/
 // Somewhat cross-platform way to make a canvas' 2d context not smooth pixels
 function canvasDisableSmoothing(canvas, context) {
   context = context || canvas.getContext("2d");
-  
+
   context.webkitImageSmoothingEnabled = false;
   context.mozImageSmoothingEnabled = false;
   context.imageSmoothingEnabled = false;

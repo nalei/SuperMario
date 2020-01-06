@@ -12,7 +12,7 @@ function Quadrant(row, left) {
   this.top = (row-1) * quads.height;
   this.right = this.left + quads.width;
   this.bottom = this.top + quads.height;
-  
+
   this.things = []
   this.numobjects = this.tolx = this.toly = 0;
 }
@@ -29,7 +29,7 @@ function createQuadrants() {
 function setQuadDimensions() {
   quads.width = quads.rightdiff = Math.round(window.innerWidth / (quads.cols - 3));
   quads.height = Math.round(window.innerHeight / (quads.rows - 2));
-  
+
   quads.delx = quads.width * -2;
 }
 
@@ -74,11 +74,11 @@ function updateQuads(xdiff) {
 function determineAllQuadrants() {
   for(var i=0; i<quads.length; ++i)
     quads[i].numthings = 0;
-  
+
   for(var j=0; j<solids.length; ++j)
     if(solids[j].moved != false)
       determineThingQuadrants(solids[j]);
-  
+
   // for(var k=0; k<characters.length; ++k)
     // determineThingQuadrants(characters[k]);
 }

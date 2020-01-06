@@ -14,11 +14,11 @@
 function addEvent(func, count) {
   if(!(func instanceof Function)) return false;
   count = count || 1;
-  
+
   // Get the first two arguments out of there, as they're stored in func & count
   var args = arrayMake(arguments);
   args.splice(0, 2);
-  
+
   // Create the event, insert it into events, then return it.
   var contents = {
     func: func,
@@ -36,11 +36,11 @@ function addEventInterval(func, count, reptimes) {
   // For example: game.addEventInterval(game.scrollTime, 1, Infinity)
   if(!(func instanceof Function)) return false;
   count = count || 1;
-  
+
   var args = arrayMake(arguments);
   // Reptimes is an extra parameter, so chop the first 3 instead of 2
   args.splice(0, 3);
-  
+
   var contents = {
     func: func,
     count: gamecount + count,
@@ -48,9 +48,9 @@ function addEventInterval(func, count, reptimes) {
     timeout: count,
     repeat: reptimes
   };
-  
+
   contents.func.event = contents; // whoa
-  
+
   insertSortedEvent(events, contents, contents.count);
   return contents;
 }
@@ -63,7 +63,7 @@ function addEventIntervalSynched(func, count, reptimes, me, settings) {
         me.startcount = gamecount;
         return addEventInterval.apply(scope, args);
       };
-  
+
   // There is no difference in times, you're good to go
   if(entry == gamecount) {
     return addfunc(scope, arguments, me);
@@ -82,31 +82,31 @@ function handleEvents() {
   var events_current = events[gamecount],
       event, repfunc,
       len, i;
-  
+
   // If there are no events on this timer, return
   if(!events_current) return;
-  
+
   // For each event scheduled for now:
   for(i = 0, len = events_current.length; i < len; ++i) {
     event = events_current[i];
-    
+
     // Call the function - apply is used to pass in the arguments dynamically
     // The event is done if result is true: (by default, it's null - nothing returned)
     if(event.repeat && !event.func.apply(null, event.args)) {
-      
+
       // If it has a count changer (Mario's running), do that
       if(event.count_changer) event.count_changer(event);
-      
+
       // If repeat is a function, then running it determines whether to repeat
       if(event.repeat instanceof Function) {
         // Binding then calling is what actually runs the function
-        repfunc = event.repeat.bind(event); 
+        repfunc = event.repeat.bind(event);
         if(repfunc()) {
           event.count += event.timeout;
           insertSortedEvent(events, event, event.count);
         }
       }
-      
+
       // Otherwise it's a number - decrement it and repeat if not 0.
       else {
         if(--event.repeat != 0) {
@@ -116,7 +116,7 @@ function handleEvents() {
       }
     }
   }
-  
+
   delete events[gamecount];
 }
 
@@ -160,7 +160,7 @@ function addSpriteCycleSynched(me, settings, name, timing) {
 function setSpriteCycle(me, settings, timing, synched) {
   settings.loc = -1;
   settings.oldclass = "761deadsoldiers"; // never reached - too inconspicuous
-  me.onadding = function() { 
+  me.onadding = function() {
     if(synched) settings.event = addEventIntervalSynched(cycleClass, timing || 9, Infinity, me, settings);
     else settings.event = addEventInterval(cycleClass, timing || 9, Infinity, me, settings);
   }
@@ -186,7 +186,7 @@ function clearAllCycles(me) {
 
 function cycleClass(me, settings) {
   if(!me || !settings || !settings.length) return true;
-  
+
   if(settings.oldclass != "") removeClass(me, settings.oldclass);
   settings.loc = ++settings.loc % settings.length;
   // Current is the sprite, bool, or function currently being added and/or run
@@ -197,11 +197,11 @@ function cycleClass(me, settings) {
       settings.oldclass = name;
       addClass(me, name);
       return false;
-    } 
+    }
     else return (name === false);
   }
   // If it's false, this will stop the loop
-  else { 
+  else {
     return (current === false);
   }
 }
@@ -239,7 +239,7 @@ function scrollTime(dx) {
   dx = dx || 21;
   mario.nofall = mario.nocollide = nokeys = true;
   addEventInterval(scrollMario, 1, Infinity, dx);
-  
+
   mario.oldtop = mario.top;
   mario.siny = -Math.PI;
   addEventInterval(function() {
@@ -249,7 +249,7 @@ function scrollTime(dx) {
     shiftVert(mario, -1.4);
     mario.oldtop -= 1.4;
   }, 1, 49);
-  
+
   addEventInterval(function() {
     if(map.has_lakitu) killFlip(map.has_lakitu);
   }, 70);

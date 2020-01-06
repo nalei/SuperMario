@@ -29,10 +29,10 @@ function resetLibrary() {
     [60,188,252,255],
     [92,148,252,255]
   ];
-  
+
   // This starts off at 2
   window.digitsize = getDigitSize(palette);
-  
+
   // Commonly used filters (placed in the library after parsing)
   window.filters = {
     Underworld: ["palette", {"05": "18", "09": "16"}],
@@ -47,7 +47,7 @@ function resetLibrary() {
     },
     smart: ["palette", {"14": "08"}]
   }
-  
+
   // Yup.
   window.library = {
     rawsprites: {
@@ -683,13 +683,13 @@ function resetLibrary() {
         "Sky.mp3",
         "Underwater.mp3",
         "Underworld.mp3",
-        
+
         "Hurry Castle.mp3",
         "Hurry Overworld.mp3",
         // to do: missing Sky.mp3
         "Hurry Underwater.mp3",
         "Hurry Underworld.mp3",
-        
+
         "Starman.mp3",
         "Hurry Starman.mp3"
       ]
@@ -740,14 +740,14 @@ function evaluatePost(caller, command, i) {
     // ["same", ["container", "path", "to", "target"]]
     case "same":
       return followPath(library.sprites, command[1], 0);
-    
+
     // Filter: takes a reference to the target, and applies a filter to it
     // ["filter", ["container", "path", "to", "target"], filters.DoThisFilter]
     case "filter":
       var ref = followPath(library.rawsprites, command[1], 0),
           filter = command[2];
       return applyLibraryFilter(ref, filter, i);
-    
+
     // Multiple: uses more than one image, either vertically or horizontally
     // Not to be confused with having .repeat = true.
     // ["multiple", "vertical", {
@@ -775,7 +775,7 @@ function applyPaletteFilterRecursive(ref, filter) {
   for(i in ref) {
     found = ref[i];
     switch(found.constructor) {
-      case String: 
+      case String:
         // if(i != "normal" || stringIsSprite(found)) obj[i] = spriteGetArray(spriteExpand(applyPaletteFilter(spriteUnravel(found), filter)));
         obj[i] = spriteGetArray(spriteExpand(applyPaletteFilter(spriteUnravel(found), filter)));
       break;

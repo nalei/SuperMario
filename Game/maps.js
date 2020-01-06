@@ -163,16 +163,16 @@ function setMap(one, two) {
 // Down means Mario is moving down; Up means Mario is moving up.
 function setMapRandom(transport) {
   if(!gameon) return;
-  
+
   resetSeed();
-  
+
   // Determine how to get into the map
   if(typeof(transport) == "string") transport = ["Random", transport];
   else if(!transport) transport = ["Random", "Overworld"];
-  
+
   // Actually set the map and shift to the location
   setMap(transport[0], transport[1]);
-  
+
   // Record random-specific stuff
   data.traveledold = data.traveled;
   map.sincechange = map.num_random_sections = 0;
@@ -189,24 +189,24 @@ function shiftToLocation(loc) {
   if(map.random && typeof(loc) != "number") {
     return setMapRandom(loc);
   }
-  if(typeof(loc) == "number") 
-    loc = map.locs[loc]; 
-  
+  if(typeof(loc) == "number")
+    loc = map.locs[loc];
+
   // Reset everything game-related
   pause();
   resetGameState();
   resetGameScreenPosition();
   resetQuadrants();
-  
+
   // Set this location's area as current
   map.areanum = loc.area;
   window.area = map.area = map.areas[map.areanum];
-  
+
   // Clear everything, create the map, then set post-creation settings
   setAreaPreCreation(area);
   area.creation();
   setAreaPostCreation(area);
-  
+
   // Start off by spawning, then placing Mario
   spawnMap();
   mario = placeMario();
@@ -218,7 +218,7 @@ function shiftToLocation(loc) {
   loc.entry(mario, loc.entrything);
   // Don't forget the least annoying part of programming this!
   addEvent(playTheme, 2);
-  
+
   // Texts are bound-check checked periodically for peformance reasons
   addEventInterval(checkTexts, 117, Infinity);
 }
@@ -233,16 +233,16 @@ function setAreaPreCreation(area) {
   area.precharacters = [];
   area.presolids = [];
   area.prescenery = [];
-  
+
   // Reset the spawn & scroll settings
   map.current_solid = map.current_character = map.current_scenery = map.shifting = 0;
   map.canscroll = true;
-  
+
   data.time.amount = map.time;
   data.world.amount = currentmap[0] + "-" + currentmap[1];
   setDataDisplay();
   startDataTime();
-  
+
   if(map.random) {
     data.world.amount = "Random Map";
     data.world.element.innerHTML = "WORLD<br>Random Map";
@@ -258,13 +258,13 @@ function clearTexts() {
 function setAreaPostCreation() {
   map.current_character = map.current_solid = map.current_scenery = 0;
   area.width = max(area.width, gamescreen.width);
-  
+
   // Reset gravity and underwater
   map.underwater = map.area.underwater;
   map.jumpmod = 1.056 + 3.5 * map.underwater;
   map.has_lakitu = false;
   addEvent(setMapGravity, 1);
-  
+
   // If it's underwater, give it the waves on top and mario's bubble event
   if(area.underwater) {
     // Random maps have a block to stop mario from swimming too high
@@ -272,12 +272,12 @@ function setAreaPostCreation() {
     // Non-random maps also have a water sprite (randoms set it themselves)
     if(!map.random) area.presolids.push(new PreThing(0, 16, Sprite, "Water", [area.width / 3, 1]));
   }
-  
+
   // Sort everything using ascending order
   area.presolids.sort(prethingsorter);
   area.precharacters.sort(prethingsorter);
   area.prescenery.sort(prethingsorter);
-  
+
   // If the area has loops (really just castles), do this.
   if(area.sections && area.sections[0]) {
     setBStretch();
@@ -289,7 +289,7 @@ function setAreaPostCreation() {
     var blocker = new PreThing(area.width, 0, ScrollBlocker);
     area.presolids.push(blocker);
   }
-  
+
   // The fillstyle is the background color
   area.fillStyle = getAreaFillStyle(area.setting);
 }
@@ -325,7 +325,7 @@ function spawnMap() {
       quadswidtht2 = quads.width * 2 + rightdiff,
       screenrightpq = screenright + quadswidtht2,
       arr, arrlen, prething, thing, current;
-  
+
   // Spawn characters
   arr = area.precharacters;
   arrlen = arr.length;
@@ -337,7 +337,7 @@ function spawnMap() {
     ++current;
   }
   map.current_character = current;
-  
+
   // Spawn solids
   arr = area.presolids;
   arrlen = arr.length;
@@ -349,7 +349,7 @@ function spawnMap() {
     ++current;
   }
   map.current_solid = current;
-  
+
   // Spawn scenery
   arr = area.prescenery;
   arrlen = arr.length;
@@ -367,7 +367,7 @@ function spawnMap() {
 // Entry Functions
 function goToTransport(transport) {
   // Goes to a new map
-  if(transport instanceof Array) { 
+  if(transport instanceof Array) {
     map.ending = true;
     storeMarioStats();
     pause();
@@ -419,7 +419,7 @@ function entryRandom(me) {
   addSeedDisplay();
   // To do: remember to set the text & width of the curmap datadisplay
   switch(map.entrancetype) {
-    case "Down": 
+    case "Down":
       entryNormal(mario);
     break;
     case "Up":
@@ -449,9 +449,9 @@ function enterCloudWorld(me, nopause) {
   // Mario climbs up the left until two blocks from the top, then switches & jumps
   /*if(!nopause) pause();
   else */unpause();
-  
+
   if(map.random) map.exitloc = getAfterSkyTransport();
-  
+
   var screenbottom = 140 * unitsize,
       screentop = 72 * unitsize;
   setTop(me, screenbottom);
@@ -460,10 +460,10 @@ function enterCloudWorld(me, nopause) {
   addClasses(me, ["climbing", "animated"]);
   me.climbing = addSpriteCycleManual(me, ["one", "two"], "climbing");
   me.nofall = true;
-  
+
   me.attached = new Thing(Vine, -1);
   addThing(me.attached, unitsizet32, screenbottom - unitsizet8);
-  
+
   var movement = setInterval(function() {
     // Vine moving up
     if(me.attached.top <= screentop) {
@@ -500,7 +500,7 @@ function walkToPipe() {
   mario = placeMario();
   startWalking(mario);
   map.canscroll = false;
-  
+
   var move = setInterval(function() {
     if(mario.piping) {
       if(sounds[0]) sounds[0].pause();
@@ -518,7 +518,7 @@ function startWalking(me) {
   me.nofall = me.nocollide = false;
 }
 function intoPipeVert(me, pipe, transport) {
-  if(!pipe.transport || !me.resting || 
+  if(!pipe.transport || !me.resting ||
                         me.right + unitsizet2 > pipe.right ||
                         me.left - unitsizet2 < pipe.left) return;
   pipePreparations(me);
@@ -688,7 +688,7 @@ function pushPreScale(xloc, yloc, width, settings) {
       offy1 = settings[1] + 1.5,
       offy2 = settings[2] + 1.5,
       me = pushPreThing(Scale, xloc, yloc, width).object;
-  
+
   // Set the platforms
   platleft = pushPreThing(Platform, xloc - offx, yloc - offy1 * 4, platwidth, moveFallingScale).object;
   platright = pushPreThing(Platform, xloc + width * 4 - platwidth - 6, yloc - offy2 * 4, platwidth, moveFallingScale).object;
@@ -696,11 +696,11 @@ function pushPreScale(xloc, yloc, width, settings) {
   platleft.partner = platright; platright.partner = platleft;
   platleft.tension = offy1 * unitsizet4 - unitsize * 10;
   platright.tension = offy2 * unitsizet4 - unitsize * 10;
-  
+
   // Set the tension
   me.tensionleft = offy1 * unitsize;
   me.tensionright = offy2 * unitsize;
-  
+
   // Add the strings
   platleft.string = pushPreScenery("String", xloc, yloc - offy1 * 4, 1, (offy1 - .5) * 4).object;
   platright.string = pushPreScenery("String", xloc + width * 4 - 1, yloc - offy2 * 4, 1, (offy2 - .5) * 4).object;
@@ -714,11 +714,11 @@ function pushPreWarpWorld(xloc, yloc, worlds, offset, block) {
   var startx = (offset || 0) + xloc + 10,
       len = worlds.length,
       pipe, i;
-  
+
   warp = pushPreThing(WarpWorld, xloc, yloc + ceilmax).object;
   var title = pushPreText({innerText: "WELCOME TO WARP ZONE!", style: {visibility: "hidden"} }, startx, 58);
   warp.texts.push(title.object);
-  
+
   for(i = 0; i < len; ++i) {
     if(worlds[i] != -1) {
       warp.pipes.push(pipe = pushPrePipe(startx, yloc, 24, true, worlds[i]).object);
@@ -728,7 +728,7 @@ function pushPreWarpWorld(xloc, yloc, worlds, offset, block) {
     }
     startx += 32;
   }
-  
+
   if(block) {
     window.block = pushPreThing(ScrollBlocker, xloc, ceilmax);
     pushPreThing(ScrollBlocker, startx + 16, ceilmax);
@@ -769,7 +769,7 @@ function setMapGravity() {
 }
 
 function setBStretch() {
-  window.bstretch = gamescreen.width / 8 - 2; 
+  window.bstretch = gamescreen.width / 8 - 2;
 }
 
 /*
@@ -789,11 +789,11 @@ function endCastleOutside(xloc, yloc, castlevel, wall, dist) {
   detect.stone = pushPreThing(Stone, xloc + 4, yloc + 8).object;
   detect.top = pushPreThing(FlagTop, xloc + 6.5, 84).object;
   detect.pole = pushPreThing(FlagPole, xloc + 8, 80).object;
-  
+
   // detect2.castle = pushPreScenery("Castle", xloc + dist, yloc + castlevel).object;
   if(wall) pushPreScenery("CastleWall", xloc + dist + 72, yloc, wall);
   if(castlevel == 0) shiftHoriz(detect2, unitsizet8);
-  
+
   pushPreCastle(xloc + dist + 16, yloc, castlevel);
 }
 
@@ -811,16 +811,16 @@ function endCastleInside(xloc, last) {
   axe.chain = pushPreThing(CastleChain, xloc + 96.5, 32).object;
   axe.bowser = pushPreThing(Bowser, xloc + 69, 42).object;
   pushPreThing(ScrollBlocker, xloc + 112, ceilmax); // 104 + 16
-  
+
   pushPreThing(Stone, xloc, 88, 32);
   fillPreWater(xloc, 0, 26);
   pushPreFloor(xloc + 104, 32, 3);
   pushPreFloor(xloc + 104, 0, 19);
   pushPreThing(Stone, xloc + 112, 80, 2, 3);
-  
+
   // Stop that scrolling... again
   pushPreThing(ScrollBlocker, xloc + 256, ceilmax);
-  
+
   // Place the NPC
   endCastleInsideFinal(xloc, last);
 }
@@ -829,7 +829,7 @@ function endCastleInsideFinal(xloc, last) {
   var stopper = pushPreFuncCollider(xloc + 180, collideCastleNPC).object,
       style = { visibility: "hidden" },
       text, i;
-  // Either put Peach... 
+  // Either put Peach...
   if(last) {
     pushPreThing(Peach, xloc + 194, 13).object;
     text = stopper.text = [
@@ -852,10 +852,10 @@ function pushPreSectionPass(xloc, yloc, width, height, secnum) {
   var passer = pushPreThing(Collider, xloc, yloc, [width, height], [sectionPass, sectionColliderInit]).object,
       secnum = map.area.sections.current || 0,
       section = map.area.sections[secnum];
-  
+
   if(section.numpass) ++section.numpass;
   else section.numpass = 1;
-  
+
   if(!section.colliders) section.colliders = [passer];
   else section.colliders.push(passer);
 }
@@ -863,7 +863,7 @@ function pushPreSectionFail(xloc, yloc, width, height, secnum) {
   var failer = pushPreThing(Collider, xloc, yloc, [width, height], [sectionFail, sectionColliderInit]).object,
       secnum = map.area.sections.current || 0,
       section = map.area.sections[secnum];
-  
+
   if(!section.colliders) section.colliders = [failer];
   else section.colliders.push(failer);
 }
@@ -885,14 +885,14 @@ function sectionPass(character, collider) {
 function sectionFail(character, collider) {
   if(character.type != "mario") return false;
   collider.nocollide = true;
-  
+
   activateSection(collider.parent, false);
 }
 function activateSection(parent, status) {
   var colliders = parent.colliders;
   for(var i=colliders.length-1; i>=0; --i)
     killNormal(colliders[i]);
-  
+
   parent.activated = true;
   parent.passed = status;
 }
@@ -902,7 +902,7 @@ function pushPreTree(xloc, yloc, width) {
   // Although the tree trunks in later trees overlap earlier ones, it's ok because
   // the pattern is indistinguishible when placed correctly.
   var dtb = DtB(yloc);
-  pushPreScenerySolid("TreeTrunk", xloc + 8, yloc - dtb - 8, width - 2 , dtb / 8); 
+  pushPreScenerySolid("TreeTrunk", xloc + 8, yloc - dtb - 8, width - 2 , dtb / 8);
 }
 function pushPreShroom(xloc, yloc, width) {
   pushPreThing(ShroomTop, xloc, yloc, width);
@@ -915,11 +915,11 @@ function pushPrePipe(xloc, yloc, height, pirhana, intoloc, exitloc) {
     height = gamescreen.height;
     yloc -= gamescreen.height;
   }
-  
+
   var prepipe = pushPreThing(Pipe, xloc, yloc + height, height / 8, intoloc),
       pipe = prepipe.object/*,
       vert = pushPreThing(PipeVertical, xloc, yloc + height - 8, height - 8)*/;
-  
+
   if(pirhana) pipe.pirhana = pushPreThing(Pirhana, xloc + 4, yloc + height + 12).object;
   if(exitloc) {
     map.locs[exitloc].entrything = pipe;
@@ -948,9 +948,9 @@ function pushPreCastleBig(xloc, yloc) {
     pushPreScenerySolid("CastleDoor", xloc + 24 + i * 16, yloc + 24);
   // Top half filling
   for(i = 0; i < 5; ++i)
-    if(i == 2) continue; 
+    if(i == 2) continue;
     else pushPreScenerySolid("BrickHalf", xloc + 16 + i * 8, yloc + 48);
-  
+
   // Left railings
   for(i = 0; i < 2; ++i)
     pushPreScenerySolid("CastleRailing", xloc + i * 8, yloc + 44);
@@ -960,7 +960,7 @@ function pushPreCastleBig(xloc, yloc) {
   // Right railings
   for(i = 5; i < 7; ++i)
     pushPreScenerySolid("CastleRailing", xloc + 16 + i * 8, yloc + 44);
-  
+
   // Bottom alternate fillings
   for(i = 0; i < 2; ++i)
     for(j = 0; j < 3; ++j)
@@ -968,22 +968,22 @@ function pushPreCastleBig(xloc, yloc) {
   // Bottom alternate doors
   for(i = 0; i < 3; ++i)
     pushPreScenerySolid("CastleDoor", xloc + 16 + i * 16, yloc);
-    
+
   // Left fill
   for(i = 0; i < 2; ++i) {
     for(j = 0; j < 5; ++j)
       pushPreScenerySolid("BrickPlain", xloc + i * 8, yloc + j * 8);
     pushPreScenerySolid("BrickHalf", xloc + i * 8, yloc + 40);
   }
-  
+
   // Right fill
   for(i = 0; i < 2; ++i) {
     for(j = 0; j < 5; ++j)
       pushPreScenerySolid("BrickPlain", xloc + 56 + i * 8, yloc + j * 8);
     pushPreScenerySolid("BrickHalf", xloc + 56 + i * 8, yloc + 40);
   }
-  
-  for(i = 0; i < 3; ++i) 
+
+  for(i = 0; i < 3; ++i)
     for(j = 0; j < 2; ++j)
       pushPreScenerySolid("BrickHalf", xloc + 16 + i * 16, yloc + 20 + j * 20);
 }
@@ -991,7 +991,7 @@ function pushPreCastleBig(xloc, yloc) {
 // To do: y u no work scenery
 function pushPreCastleSmall(xloc, yloc) {
   var i, j;
-  
+
   // Top railing
   for(i = 0; i < 3; ++i) pushPreScenerySolid("CastleRailing", xloc + 8 + i * 8, yloc + 36);
   // Top bricking
@@ -1204,21 +1204,21 @@ function World11(map) {
       pushPreThing(Stone, 1200, 24, 1, 3);
       pushPreThing(Stone, 1208, 32, 1, 4);
       pushPreThing(Stone, 1216, 32, 1, 4);
-      
+
       pushPreFloor(1240, 0, 69);
       pushPreThing(Stone, 1240, 32, 1, 4);
       pushPreThing(Stone, 1248, 24, 1, 3);
       pushPreThing(Stone, 1256, 16, 1, 2);
       pushPreThing(Stone, 1264, 8, 1, 1);
       pushPrePipe(1304, 0, 16, false, false, 1);
-      
+
       pushPreThing(Brick, 1344, jumplev1);
       pushPreThing(Brick, 1352, jumplev1);
       pushPreThing(Block, 1360, jumplev1);
       pushPreThing(Brick, 1368, jumplev1);
       pushPreThing(Goomba, 1392, 8);
       pushPreThing(Goomba, 1404, 8);
-      
+
       pushPrePipe(1432, 0, 16);
       pushPreThing(Stone, 1448, 8);
       pushPreThing(Stone, 1456, 16, 1, 2);
@@ -1229,7 +1229,7 @@ function World11(map) {
       pushPreThing(Stone, 1496, 56, 1, 7);
       pushPreThing(Stone, 1504, 64, 2, 8);
       endCastleOutside(1580);
-      
+
     }),
     new Area("Underworld", function() {
       setLocationGeneration(2);
