@@ -1,5 +1,5 @@
-# Super-Mario-HTML5
+# Super Mario Bros in HTML5
 
-Ported Super Mario by Nintendo to HTML5
+Ported Super Mario Bros by Nintendo to HTML5
 
 Online Game: https://nalei.github.io/supermario/
